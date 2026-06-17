@@ -1,4 +1,8 @@
 import os
+import sys
+
+# Ensure the repo root is on the path so `agentforge` package is importable
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,9 +12,6 @@ from agentforge.pipeline.orchestrator import Pipeline
 
 app = FastAPI()
 
-# Allow the separately-deployed Next.js frontend (or local dev) to call this API.
-# Set FRONTEND_ORIGIN to your frontend's deployed URL in Vercel's project
-# environment variables to lock this down; defaults to "*" for easy setup.
 _allowed_origin = os.environ.get("FRONTEND_ORIGIN", "*")
 app.add_middleware(
     CORSMiddleware,
@@ -25,17 +26,21 @@ class SprintRequest(BaseModel):
     title: str
     description: str
 
+
+@app.get("/api/health")
 @app.get("/")
 def health():
     return {"status": "ok"}
 
+
+@app.post("/api/chat")
 @app.post("/chat")
 def run_sprint(req: SprintRequest):
     pipeline = Pipeline(verbose=False)
 
     outputs = pipeline.run(
         title=req.title,
-        description=req.description
+        description=req.description,
     )
 
     return {
@@ -43,14 +48,8 @@ def run_sprint(req: SprintRequest):
             {
                 "role": o.role.value,
                 "summary": o.summary,
-                "approved": o.approved
+                "approved": o.approved,
             }
             for o in outputs
         ]
     }
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
