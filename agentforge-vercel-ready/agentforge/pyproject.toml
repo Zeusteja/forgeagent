@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentforge"
+version = "0.1.0"
+description = "A self-routing multi-agent AI team: CEO, Architect, Engineer, Designer, QA, Security, Docs & Release"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic>=0.30.0",
+    "rich>=13.0.0",
+    "typer>=0.12.0",
+    "pyyaml>=6.0"
+]
+
+[project.scripts]
+agentforge = "agentforge.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/your-username/agentforge"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agentforge*"]
