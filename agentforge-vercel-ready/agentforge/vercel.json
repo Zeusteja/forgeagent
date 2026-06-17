@@ -1,13 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" }
-  ],
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/.next",
+  "framework": "nextjs",
+  "installCommand": "cd frontend && npm install",
   "functions": {
     "api/index.py": {
       "runtime": "python3.12",
       "maxDuration": 60,
       "excludeFiles": "{frontend/**,tests/**,examples/**,**/__pycache__/**,**/*.pyc,.git/**}"
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" }
+  ]
 }
