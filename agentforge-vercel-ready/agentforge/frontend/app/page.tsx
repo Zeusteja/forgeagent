@@ -2,11 +2,6 @@
 
 import { useState } from "react";
 
-// Set NEXT_PUBLIC_API_URL in Vercel's frontend project env vars to your
-// deployed FastAPI backend's URL (e.g. https://agentforge-api.vercel.app).
-// Falls back to "" so it still works if both are ever served from one domain.
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
-
 export default function Home() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -19,27 +14,18 @@ export default function Home() {
     setError("");
 
     try {
-      const res = await fetch(`${API_URL}/chat`, {
+      const res = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          title,
-          description
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description }),
       });
 
-      if (!res.ok) {
-        throw new Error(`Request failed: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
 
       const data = await res.json();
       setResult(data.outputs || []);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Something went wrong calling the API."
-      );
+      setError(err instanceof Error ? err.message : "Something went wrong calling the API.");
     } finally {
       setLoading(false);
     }
@@ -55,8 +41,7 @@ export default function Home() {
         onChange={(e) => setTitle(e.target.value)}
       />
 
-      <br />
-      <br />
+      <br /><br />
 
       <textarea
         rows={6}
@@ -66,8 +51,7 @@ export default function Home() {
         onChange={(e) => setDescription(e.target.value)}
       />
 
-      <br />
-      <br />
+      <br /><br />
 
       <button onClick={runSprint} disabled={loading}>
         {loading ? "Running..." : "Run Sprint"}
